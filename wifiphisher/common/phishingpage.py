@@ -1,4 +1,12 @@
-"""This module handles all the phishing related operations."""
+"""Handles all the phishing related operations.
+
+For specific target-oriented attacks, creating a custom Wifiphisher
+phishing scenario (or phishing template) may be necessary. For example,
+during a penetration testing, it may be necessary to capture the domain
+credentials using a phishing page with a familiar (to the victim users)
+interface, then verify the captured credentials over a local LDAP server
+and finally deliver them via SMTP to a mail server that we own.
+"""
 
 from __future__ import (absolute_import, division, print_function)
 import os
@@ -26,13 +34,40 @@ def config_section_map(config_file, section):
 
 
 class InvalidTemplate(Exception):
-    """Exception class to raise in case of a invalid template."""
+    """Exception to raise in case of an invalid template."""
 
     pass
 
 
 class PhishingTemplate(object):
-    """This class represents phishing templates."""
+    """Represents a phishing template.
+
+    A config.ini file lies in template’s root directory and its contents
+    can be divided into two sections:
+
+    info: This section defines the scenario’s characteristics.
+
+        * Name (mandatory): The name of the phishing scenario.
+        * Description (mandatory): A quick description (<50 words) of the scenario.
+        * PayloadPath (optional): If the phishing scenario pushes
+          malwares to victims, users can insert the absolute path
+          of the malicious executable here.
+
+    context: This section is optional and holds user-defined variables
+    that may be later injected to the template.
+
+    Here’s an example of a config.ini file:
+
+    > # This is a comment
+    > [info]
+    > Name: ISP warning page
+    > Description: A warning page from victim's ISP asking for DSL
+    credentials
+    >
+    > [context]
+    > victim_name: John Phisher
+    > victim_ISP: Interwebz
+    """
 
     def __init__(self, name):
         # type: (str) -> None
@@ -93,7 +128,7 @@ class PhishingTemplate(object):
 
     def update_payload_path(self, filename):
         # type: (str) -> None
-        """Update the payload path."""
+        """Update the path of payload."""
         config_path = self._config_path
         self.update_config_file(filename, config_path)
         # update payload attribute
@@ -132,7 +167,7 @@ class PhishingTemplate(object):
 
     def remove_extra_files(self):
         # type: () -> None
-        """Remove extra used files."""
+        """Remove any extra files that are no longer needed."""
         for filename in self._extra_files:
             if os.path.isfile(filename):
                 os.remove(filename)
@@ -167,7 +202,10 @@ class TemplateManager(object):
 
     def is_valid_template(self, name):
         # type: (str) -> Tuple[bool, str]
-        """Validate the template."""
+        """Validate the template.
+
+        Looks that a config.ini file and an html directory are placed.
+        """
         html = False
         dir_path = os.path.join(self._template_directory, name)
         # check config file...
@@ -190,7 +228,7 @@ class TemplateManager(object):
 
     def find_user_templates(self):
         # type: () -> List[str]
-        """Return all the user's templates available."""
+        """Return all the available templates added by the user."""
         local_templates = []  # type: List[str]
 
         for name in os.listdir(self._template_directory):
