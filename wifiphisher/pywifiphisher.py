@@ -521,7 +521,7 @@ class WifiphisherEngine:
             'target_ap_encryption':
             enctype or "",
             'target_ap_vendor':
-            self.mac_matcher.get_vendor_name(target_ap_mac) or "",
+            vendor or "",
             'target_ap_logo_path':
             ""
         })
@@ -604,9 +604,6 @@ class WifiphisherEngine:
             webserver.start()
 
             time.sleep(1.5)
-
-        # We no longer need mac_matcher
-        self.mac_matcher.unbind()
 
         clients_APs = []
         APs = []
