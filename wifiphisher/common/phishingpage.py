@@ -11,6 +11,7 @@ and finally deliver them via SMTP to a mail server that we own.
 from __future__ import (absolute_import, division, print_function)
 import os
 from shutil import copyfile
+from ConfigParser import (ConfigParser, RawConfigParser)
 from wifiphisher.common.utilities import config_section_map
 import wifiphisher.common.constants as constants
 
@@ -54,7 +55,7 @@ class PhishingTemplate(object):
     def __init__(self, name):
         # type: (str) -> None
         """Intialize the class with all arguments."""
-        config_path = os.path.join(constants.PHISHING_PAGES_DIR, name,
+        config_path = os.path.join(constants.phishing_pages_dir, name,
                                    'config.ini')
         info = config_section_map(config_path, 'info')
 
@@ -67,10 +68,10 @@ class PhishingTemplate(object):
         if 'payloadpath' in info:
             self._payload = info['payloadpath']
 
-        self.path = os.path.join(constants.PHISHING_PAGES_DIR,
+        self.path = os.path.join(constants.phishing_pages_dir,
                                  self._name.lower(),
                                  constants.SCENARIO_HTML_DIR)
-        self.static_path = os.path.join(constants.PHISHING_PAGES_DIR,
+        self.static_path = os.path.join(constants.phishing_pages_dir,
                                         self._name.lower(),
                                         constants.SCENARIO_HTML_DIR, 'static')
 
@@ -81,11 +82,11 @@ class PhishingTemplate(object):
     def update_config_file(payload_filename, config_path):
         # type: (str, str) -> None
         """Update the configuration file."""
-        original_config = ConfigParser.ConfigParser()
+        original_config = ConfigParser()
         original_config.read(config_path)
 
         # new config file object
-        config = ConfigParser.RawConfigParser()
+        config = RawConfigParser()
 
         # update the info section
         config.add_section('info')
@@ -164,7 +165,7 @@ class PhishingTemplate(object):
 class TemplateManager(object):
     """Handles all the template management operations."""
 
-    def __init__(self):
+    def __init__(self, data_pages=None):
         """Initialize the class."""
         # setup the templates
         self._template_directory = data_pages or constants.phishing_pages_dir
