@@ -10,27 +10,8 @@ and finally deliver them via SMTP to a mail server that we own.
 
 from __future__ import (absolute_import, division, print_function)
 import os
-import ConfigParser
 from shutil import copyfile
 import wifiphisher.common.constants as constants
-
-
-def config_section_map(config_file, section):
-    """Map the values of a config file to a dictionary."""
-    config = ConfigParser.ConfigParser()
-    config.read(config_file)
-    dict1 = {}
-
-    if section not in config.sections():
-        return dict1
-
-    options = config.options(section)
-    for option in options:
-        try:
-            dict1[option] = config.get(section, option)
-        except KeyError:
-            dict1[option] = None
-    return dict1
 
 
 class InvalidTemplate(Exception):
