@@ -11,6 +11,7 @@ and finally deliver them via SMTP to a mail server that we own.
 from __future__ import (absolute_import, division, print_function)
 import os
 from shutil import copyfile
+from wifiphisher.common.utilities import config_section_map
 import wifiphisher.common.constants as constants
 
 
